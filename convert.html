@@ -81,7 +81,8 @@
         }
         
         input[type="file"],
-        textarea {
+        textarea,
+        input[type="text"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -97,7 +98,8 @@
         }
         
         input[type="file"]:focus,
-        textarea:focus {
+        textarea:focus,
+        input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -177,6 +179,18 @@
         .download-btn:hover {
             box-shadow: 0 5px 20px rgba(0, 123, 255, 0.4);
         }
+
+        .url-copy-btn {
+            background: #ffc107;
+            color: #333;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .url-copy-btn:hover {
+            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
+        }
         
         .info-box {
             background: #f9f9f9;
@@ -207,6 +221,17 @@
             font-family: monospace;
             font-size: 0.9em;
         }
+
+        .url-box {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -224,6 +249,7 @@
                     <li><strong>Convert:</strong> Automatically extracts JSON and adds missing required fields</li>
                     <li><strong>Download:</strong> Get a ready-to-import JSON file</li>
                     <li><strong>Or Copy:</strong> Paste the JSON directly into a new file</li>
+                    <li><strong>Share:</strong> Get a GitHub URL to share with others</li>
                 </ul>
             </div>
             
@@ -266,10 +292,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- URL DISPLAY SECTION -->
+            <div style="border-top: 2px solid #ddd; padding-top: 40px;">
+                <h2 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #667eea; padding-bottom: 10px;">🔗 Step 3: Share URL (Optional)</h2>
+                
+                <p style="color: #666; margin-bottom: 15px;">
+                    After downloading your JSON file to your repo, get the GitHub raw URL here:
+                </p>
+
+                <div class="form-group">
+                    <label for="playerName">Player Filename (without .json):</label>
+                    <input type="text" id="playerName" placeholder="e.g., max_hull" />
+                </div>
+
+                <button onclick="generateGitHubURL()" style="margin-bottom: 15px;">🔗 Generate GitHub URL</button>
+
+                <div class="form-group">
+                    <label for="githubUrl">Your GitHub Raw URL:</label>
+                    <div class="url-box" id="githubUrl">Enter filename above and click Generate</div>
+                </div>
+
+                <button class="url-copy-btn" onclick="copyURLToClipboard()">📋 Copy URL</button>
+            </div>
         </div>
     </div>
 
     <script>
+        const GITHUB_REPO = 'abootlicker-hue/hoop-land-export-stuff';
+        const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/players/';
+
         // Handle file upload
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -315,11 +367,28 @@
                 const jsonString = JSON.stringify(playerData, null, 2);
                 document.getElementById('jsonOutput').value = jsonString;
                 
+                // Auto-populate player name in URL section
+                const playerName = (playerData.fn || 'player') + '_' + (playerData.ln || 'data');
+                document.getElementById('playerName').value = playerName.toLowerCase().replace(/\s+/g, '_');
+                
                 showMessage(messageBox, `✅ Successfully converted! Player: ${playerData.fn} ${playerData.ln}`, 'success');
                 
             } catch (e) {
                 showMessage(messageBox, `❌ Conversion error: ${e.message}`, 'error');
             }
+        }
+        
+        // Generate GitHub URL
+        function generateGitHubURL() {
+            const playerName = document.getElementById('playerName').value.trim();
+            
+            if (!playerName) {
+                alert('❌ Please enter a player filename');
+                return;
+            }
+            
+            const url = GITHUB_RAW_URL + playerName + '.json';
+            document.getElementById('githubUrl').textContent = url;
         }
         
         // Ensure complete structure with all required fields
@@ -596,6 +665,21 @@
             
             navigator.clipboard.writeText(output).then(() => {
                 alert('✅ Copied to clipboard!');
+            }).catch(err => {
+                alert('❌ Failed to copy: ' + err);
+            });
+        }
+
+        // Copy URL to clipboard
+        function copyURLToClipboard() {
+            const url = document.getElementById('githubUrl').textContent;
+            if (url === 'Enter filename above and click Generate') {
+                alert('❌ Please generate a URL first!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ URL copied to clipboard!');
             }).catch(err => {
                 alert('❌ Failed to copy: ' + err);
             });
