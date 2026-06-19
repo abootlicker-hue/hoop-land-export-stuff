@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXT to JSON Converter - Hoopland</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .column h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea {
+            min-height: 300px;
+            resize: vertical;
+        }
+        
+        input[type="file"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .button-group button {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border-color: #0c5460;
+            color: #0c5460;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            margin-top: 10px;
+        }
+        
+        .copy-btn:hover {
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .download-btn {
+            background: #007bff;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            box-shadow: 0 5px 20px rgba(0, 123, 255, 0.4);
+        }
+        
+        .info-box {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 TXT to JSON Converter</h1>
+            <p>Convert Hoopland TXT player exports to valid JSON format</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 How It Works</h3>
+                <ul>
+                    <li><strong>Upload:</strong> Select your Hoopland .txt export file</li>
+                    <li><strong>Convert:</strong> Automatically extracts JSON and adds missing required fields</li>
+                    <li><strong>Download:</strong> Get a ready-to-import JSON file</li>
+                    <li><strong>Or Copy:</strong> Paste the JSON directly into a new file</li>
+                </ul>
+            </div>
+            
+            <div class="two-column">
+                <!-- INPUT COLUMN -->
+                <div class="column">
+                    <h2>📥 Step 1: Upload TXT File</h2>
+                    
+                    <div class="form-group">
+                        <label for="fileInput">Select your Hoopland TXT file:</label>
+                        <input type="file" id="fileInput" accept=".txt,.json" />
+                    </div>
+                    
+                    <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">
+                        💡 The game exports player data as TXT. This tool converts it to JSON with all required fields.
+                    </p>
+                    
+                    <div class="form-group">
+                        <label for="manualInput">Or paste TXT/JSON directly:</label>
+                        <textarea id="manualInput" placeholder="Paste your Hoopland player data here..."></textarea>
+                    </div>
+                    
+                    <button onclick="convertFile()">🔄 Convert to JSON</button>
+                </div>
+                
+                <!-- OUTPUT COLUMN -->
+                <div class="column">
+                    <h2>📤 Step 2: Get Your JSON</h2>
+                    
+                    <div id="message"></div>
+                    
+                    <div class="form-group">
+                        <label for="jsonOutput">Converted JSON (ready to import):</label>
+                        <textarea id="jsonOutput" readonly placeholder="Converted JSON will appear here..."></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="copy-btn" onclick="copyToClipboard()">📋 Copy JSON</button>
+                        <button class="download-btn" onclick="downloadJSON()">⬇️ Download JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle file upload
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('manualInput').value = event.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+        
+        // Main conversion function
+        function convertFile() {
+            const input = document.getElementById('manualInput').value.trim();
+            const messageBox = document.getElementById('message');
+            
+            if (!input) {
+                showMessage(messageBox, '❌ Please upload or paste data', 'error');
+                return;
+            }
+            
+            try {
+                let playerData;
+                
+                // Try to parse as JSON first
+                try {
+                    playerData = JSON.parse(input);
+                } catch (e) {
+                    // If it's not valid JSON, try to extract JSON from the text
+                    const jsonMatch = input.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        playerData = JSON.parse(jsonMatch[0]);
+                    } else {
+                        throw new Error('No valid JSON found in the input');
+                    }
+                }
+                
+                // Ensure all required fields exist
+                playerData = ensureCompleteStructure(playerData);
+                
+                // Output the JSON
+                const jsonString = JSON.stringify(playerData, null, 2);
+                document.getElementById('jsonOutput').value = jsonString;
+                
+                showMessage(messageBox, `✅ Successfully converted! Player: ${playerData.fn} ${playerData.ln}`, 'success');
+                
+            } catch (e) {
+                showMessage(messageBox, `❌ Conversion error: ${e.message}`, 'error');
+            }
+        }
+        
+        // Ensure complete structure with all required fields
+        function ensureCompleteStructure(player) {
+            // Merge with default structure
+            const defaults = getDefaultPlayerStructure();
+            const merged = deepMerge(defaults, player);
+            return merged;
+        }
+        
+        // Deep merge objects
+        function deepMerge(target, source) {
+            const output = Object.assign({}, target);
+            if (isObject(target) && isObject(source)) {
+                Object.keys(source).forEach(key => {
+                    if (isObject(source[key])) {
+                        if (!(key in target))
+                            Object.assign(output, { [key]: source[key] });
+                        else
+                            output[key] = deepMerge(target[key], source[key]);
+                    } else {
+                        Object.assign(output, { [key]: source[key] });
+                    }
+                });
+            }
+            return output;
+        }
+        
+        function isObject(item) {
+            return item && typeof item === 'object' && !Array.isArray(item);
+        }
+        
+        // Default complete player structure
+        function getDefaultPlayerStructure() {
+            return {
+                "id": 0,
+                "tid": 0,
+                "league": 1,
+                "fn": "Unknown",
+                "ln": "Player",
+                "tag": "",
+                "home": "",
+                "ctry": "US",
+                "loc": { "x": 0, "y": 0 },
+                "age": 20,
+                "ht": 78,
+                "wt": 200,
+                "yrs": 0,
+                "num": 0,
+                "gender": 0,
+                "pos": 3,
+                "teamPos": 0,
+                "posRnk": 0,
+                "linePos": 0,
+                "rating": 0.0,
+                "minutes": [0, 0, 0, 0, 0, 0],
+                "usage": 0,
+                "pri": 11,
+                "sec": 0,
+                "arc": "No Archetype",
+                "pot": 10,
+                "regressionAge": 32,
+                "appearance": {
+                    "skinC": "BF7958",
+                    "eyeC": "262539",
+                    "unibrow": false,
+                    "browC": "E5AE78",
+                    "hair": "0104",
+                    "hairC": "E5AE78",
+                    "fHair": "0016",
+                    "fHairC": "E5AE78"
+                },
+                "accessories": [],
+                "suits": [],
+                "attributes": {
+                    "LAY": [5, 10],
+                    "DNK": [5, 8],
+                    "INS": [10, 16],
+                    "MID": [16, 20],
+                    "TPT": [12, 18],
+                    "FTS": [8, 10],
+                    "DRB": [7, 14],
+                    "PAS": [16, 20],
+                    "ORE": [6, 8],
+                    "DRE": [6, 10],
+                    "STL": [16, 20],
+                    "BLK": [8, 14],
+                    "STR": [15, 15],
+                    "SPD": [14, 14],
+                    "STM": [20, 20]
+                },
+                "skills": [
+                    {"id": "SPA", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "CLU", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "UNF", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "DIM", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "CHE", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "STE", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "HOT", "xp": 0, "level": 1, "equipped": true},
+                    {"id": "TWO", "xp": 0, "level": 1, "equipped": true}
+                ],
+                "tendencies": {
+                    "dunk": -1,
+                    "floater": -4,
+                    "hook": -5,
+                    "post": -5,
+                    "twoPoint": 5,
+                    "threePoint": 4,
+                    "pumpFake": 1,
+                    "fades": 5,
+                    "pass": 5,
+                    "lob": 5,
+                    "cross": 3,
+                    "spin": 3,
+                    "step": 5,
+                    "offReb": -2,
+                    "runPlay": -3,
+                    "defReb": 2,
+                    "takeCharge": 0,
+                    "stealOnBall": 5,
+                    "stealOffBall": 5,
+                    "block": 2
+                },
+                "gameStatus": {
+                    "startPos": 0,
+                    "stamina": 0,
+                    "gradePoints": -1,
+                    "grade": 5,
+                    "streak": 0,
+                    "matchup": 0,
+                    "pressure": 0,
+                    "doubleTeam": 0,
+                    "xpEarned": 0,
+                    "relationship": 0,
+                    "onBench": false,
+                    "injured": false,
+                    "isPlayer": false
+                },
+                "gameStats": createEmptyStats(),
+                "season": {
+                    "xp": [0, 0, 0, 0, 0],
+                    "ap": [0, 0, 0, 0, 0],
+                    "condition": 100,
+                    "morale": 100,
+                    "restDay": false,
+                    "injury": {
+                        "yr": 0,
+                        "core": 0,
+                        "upperBody": 0,
+                        "lowerBody": 0,
+                        "minorSeverity": 0,
+                        "majorSeverity": 0,
+                        "gamesOut": 0,
+                        "ageRegression": 0,
+                        "age": 0
+                    },
+                    "onTradeBlock": 0,
+                    "regimen": 0,
+                    "focus": 0,
+                    "watch": false,
+                    "scout": false,
+                    "progress": 0,
+                    "protect": false,
+                    "retiring": false,
+                    "gpa": 0,
+                    "relationship": 0,
+                    "legacyPoints": 0,
+                    "following": false,
+                    "legacy": 0,
+                    "gameHistory": { "GP": 0, "W": 0, "L": 0 }
+                },
+                "stats": [],
+                "careerStats": {
+                    "season": createEmptyStats(),
+                    "seasonHighs": createEmptyStats(),
+                    "playoffs": createEmptyStats(),
+                    "playoffHighs": createEmptyStats(),
+                    "finals": createEmptyStats(),
+                    "finalsHighs": createEmptyStats()
+                },
+                "awards": [],
+                "history": {
+                    "coll": 0,
+                    "collegeStats": {
+                        "season": createEmptyStats(),
+                        "seasonHighs": createEmptyStats(),
+                        "playoffs": createEmptyStats(),
+                        "playoffHighs": createEmptyStats(),
+                        "finals": createEmptyStats(),
+                        "finalsHighs": createEmptyStats()
+                    },
+                    "id": 0,
+                    "tid": 0,
+                    "draft": { "pk": 0, "rd": 0, "tid": 0, "otid": 0, "yr": 0 },
+                    "fantasyDrafts": [],
+                    "expansionDrafts": [],
+                    "injuries": [],
+                    "yearRetired": 0,
+                    "yearInducted": 0,
+                    "causeOfDeath": 0
+                },
+                "careerGoals": {
+                    "game": { "PTS": 0, "TPM": 0, "REB": 0, "AST": 0, "STL": 0, "BLK": 0, "TD": 0 },
+                    "season": { "PTS": 0, "TPM": 0, "REB": 0, "AST": 0, "STL": 0, "BLK": 0, "TD": 0 },
+                    "career": { "PTS": 0, "TPM": 0, "REB": 0, "AST": 0, "STL": 0, "BLK": 0, "TD": 0 }
+                },
+                "contract": {
+                    "tid": 0,
+                    "pid": 0,
+                    "type": 0,
+                    "yrs": 0,
+                    "sal": 0,
+                    "opt": 0,
+                    "noTrd": 0,
+                    "canExt": true,
+                    "ext": { "yrs": 0, "sal": 0, "opt": 0, "noTrd": 0 }
+                },
+                "status": 0,
+                "records": 0
+            };
+        }
+        
+        function createEmptyStats() {
+            return {
+                "tid": 0,
+                "num": -1,
+                "GP": 0,
+                "GS": 0,
+                "DNP": 0,
+                "INJ": 0,
+                "W": 0,
+                "L": 0,
+                "MIN": [0, 0, 0, 0, 0, 0],
+                "PM": 0,
+                "POS": 0,
+                "PTS": 0,
+                "FGM": 0,
+                "FGA": 0,
+                "TPM": 0,
+                "TPA": 0,
+                "FTM": 0,
+                "FTA": 0,
+                "REB": 0,
+                "ORB": 0,
+                "AST": 0,
+                "STL": 0,
+                "BLK": 0,
+                "TO": 0,
+                "PF": 0,
+                "GW": 0,
+                "DD": 0,
+                "TD": 0,
+                "POTG": 0
+            };
+        }
+        
+        // Show message
+        function showMessage(box, message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + type;
+            messageDiv.textContent = message;
+            
+            box.innerHTML = '';
+            box.appendChild(messageDiv);
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard() {
+            const output = document.getElementById('jsonOutput').value;
+            if (!output) {
+                alert('❌ No JSON to copy. Convert a file first!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(output).then(() => {
+                alert('✅ Copied to clipboard!');
+            }).catch(err => {
+                alert('❌ Failed to copy: ' + err);
+            });
+        }
+        
+        // Download JSON
+        function downloadJSON() {
+            const output = document.getElementById('jsonOutput').value;
+            if (!output) {
+                alert('❌ No JSON to download. Convert a file first!');
+                return;
+            }
+            
+            try {
+                const playerData = JSON.parse(output);
+                const fileName = `${playerData.fn}_${playerData.ln}.json`.toLowerCase().replace(/\s+/g, '_');
+                
+                const blob = new Blob([output], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (e) {
+                alert('❌ Error creating download: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
